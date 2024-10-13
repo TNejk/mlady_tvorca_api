@@ -30,7 +30,7 @@ def get_data():
   conn, cursor = connect()
   if conn is None:
     return cursor
-  query = "SELECT date FROM mqtt_data"
+  query = "SELECT * FROM mqtt_data"
   data = fetch_data(cursor, query)
   if isinstance(data, dict) and 'error' in data:
     disconnect(conn, cursor)
