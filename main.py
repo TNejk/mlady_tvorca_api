@@ -10,7 +10,7 @@ def connect():
     cursor = conn.cursor()
     return conn, cursor
   except psycopg2.Error as e:
-    return None, jsonify({'error': str(e)}), 500
+    return None, jsonify({'error': str(e), 'code': 500})
 
 def disconnect(connection,cursor):
   cursor.close()
