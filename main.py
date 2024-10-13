@@ -1,12 +1,15 @@
+import os
 from flask import Flask, jsonify, request
 import psycopg2
 from paho.mqtt import publish
 
+
+db_password = os.getenv('MLADY_TVORCA_DB_PASSWORD')
 app = Flask(__name__)
 
 def connect():
   try:
-    conn = psycopg2.connect(database='postgres', user='postgres', password='', host='localhost', port='5433')
+    conn = psycopg2.connect(database='postgres', user='postgres', password=db_password, host='localhost', port='5433')
     cursor = conn.cursor()
     return conn, cursor
   except psycopg2.Error as e:
@@ -90,10 +93,6 @@ def get_wind_speed():
 
 @app.route('/get/data/tenzometer', methods=['GET','POST'])
 def get_tenzometer():
-  device = request.values.get('device')
-  if not device:
-    return jsonify({'error': 'Missing parameter: device'}), 400
-
   conn, cursor = connect()
   if conn is None:
     return cursor
@@ -102,6 +101,10 @@ def get_tenzometer():
     publish.single("Tunel/esp32/SetTare", "SET_TARE", hostname="localhost", port=1983)
     return jsonify({'message': 'Weights are reseting'}), 200
   elif request.method == 'GET':
+    device = request.values.get('device')
+    if not device:
+      disconnect(conn,cursor)
+      return jsonify({'error': 'Missing parameter: device'}), 400
     if device == 'tenz_y':
       query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/Tenzometer_os_Y'"
     elif device == 'tenz_x':
