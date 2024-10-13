@@ -97,8 +97,11 @@ def get_tenzometer():
     return cursor
 
   if request.method == 'POST':
-    publish.single("Tunel/esp32/SetTare", "SET_TARE", hostname="localhost", port=1983)
-    return jsonify({'message': 'Weights are reseting'}), 200
+    try:
+      publish.single("Tunel/esp32/SetTare", "SET_TARE", hostname="localhost", port=1983)
+      return jsonify({'message': 'Weights are reseting'}), 200
+    except Exception as e:
+      return jsonify({'error': str(e)}), 500
   elif request.method == 'GET':
     device = request.values.get('device')
     if not device:
