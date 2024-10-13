@@ -30,7 +30,7 @@ def get_data():
   conn, cursor = connect()
   if conn is None:
     return cursor
-  query = "SELECT * FROM mqtt_data"
+  query = "SELECT date FROM mqtt_data"
   data = fetch_data(cursor, query)
   if isinstance(data, dict) and 'error' in data:
     disconnect(conn, cursor)
@@ -43,7 +43,11 @@ def get_temperature():
   conn, cursor = connect()
   if conn is None:
     return cursor
-  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/TeplotaVzduchu'"
+  date = request.values.get('date')
+  if not date:
+    disconnect(conn, cursor)
+    return jsonify({'error': 'Missing parameter: date'}), 400
+  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/TeplotaVzduchu' AND created_at::date = '{date}'"
   data = fetch_data(cursor, query)
   if isinstance(data, dict) and 'error' in data:
     disconnect(conn, cursor)
@@ -56,7 +60,11 @@ def get_humidity():
   conn, cursor = connect()
   if conn is None:
     return cursor
-  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/VlhkostVzduchu'"
+  date = request.values.get('date')
+  if not date:
+    disconnect(conn, cursor)
+    return jsonify({'error': 'Missing parameter: date'}), 400
+  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/VlhkostVzduchu' AND created_at::date = '{date}'"
   data = fetch_data(cursor, query)
   if isinstance(data, dict) and 'error' in data:
     disconnect(conn, cursor)
@@ -69,7 +77,11 @@ def get_pressure():
   conn, cursor = connect()
   if conn is None:
     return cursor
-  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/TlakVzduchu'"
+  date = request.values.get('date')
+  if not date:
+    disconnect(conn, cursor)
+    return jsonify({'error': 'Missing parameter: date'}), 400
+  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/TlakVzduchu' AND created_at::date = '{date}'"
   data = fetch_data(cursor, query)
   if isinstance(data, dict) and 'error' in data:
     disconnect(conn, cursor)
@@ -82,7 +94,11 @@ def get_wind_speed():
   conn, cursor = connect()
   if conn is None:
     return cursor
-  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/AeroVrtula'"
+  date = request.values.get('date')
+  if not date:
+    disconnect(conn, cursor)
+    return jsonify({'error': 'Missing parameter: date'}), 400
+  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/AeroVrtula' AND created_at::date = '{date}'"
   data = fetch_data(cursor, query)
   if isinstance(data, dict) and 'error' in data:
     disconnect(conn, cursor)
@@ -104,13 +120,17 @@ def get_tenzometer():
       return jsonify({'error': str(e)}), 500
   elif request.method == 'GET':
     device = request.values.get('device')
+    date = request.values.get('date')
     if not device:
       disconnect(conn,cursor)
       return jsonify({'error': 'Missing parameter: device'}), 400
+    if not date:
+      disconnect(conn,cursor)
+      return jsonify({'error': 'Missing parameter: date'}), 400
     if device == 'tenz_y':
-      query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/Tenzometer_os_Y'"
+      query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/Tenzometer_os_Y' AND created_at::date = '{date}'"
     elif device == 'tenz_x':
-      query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/Tenzometer_os_X'"
+      query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/Tenzometer_os_X' AND created_at::date = '{date}'"
     else:
       disconnect(conn, cursor)
       return jsonify({'error': 'Invalid parameter: device'}), 400
