@@ -1,8 +1,7 @@
-import os
 from flask import Flask, jsonify, request
 import psycopg2
 from paho.mqtt import publish
-
+import os
 
 db_password = os.getenv('MLADY_TVORCA_DB_PASSWORD')
 app = Flask(__name__)
