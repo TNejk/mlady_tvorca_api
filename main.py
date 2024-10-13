@@ -21,7 +21,7 @@ def fetch_data(cursor,query):
     cursor.execute(query)
     return cursor.fetchall()
   except psycopg2.Error as e:
-    return {'error': str(e)}
+    return {'error': str(e).strip(), 'code': 500}
 
 @app.route('/get/data/all', methods=['GET'])
 def get_data():
@@ -41,11 +41,11 @@ def get_temperature():
   conn, cursor = connect()
   if conn is None:
     return cursor
-  query = "SELECT * FROM mqtt_data WHERE topic IS Tunel_1/esp32/TeplotaVzduchu"
+  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/TeplotaVzduchu'"
   data = fetch_data(cursor, query)
   if isinstance(data, dict) and 'error' in data:
     disconnect(conn, cursor)
-    return jsonify(data), 500
+    return jsonify(data)
   disconnect(conn, cursor)
   return jsonify(data), 200
 
@@ -54,11 +54,11 @@ def get_humidity():
   conn, cursor = connect()
   if conn is None:
     return cursor
-  query = "SELECT * FROM mqtt_data WHERE topic IS Tunel_1/esp32/VlhkostVzduchu"
+  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/VlhkostVzduchu'"
   data = fetch_data(cursor, query)
   if isinstance(data, dict) and 'error' in data:
     disconnect(conn, cursor)
-    return jsonify(data), 500
+    return jsonify(data)
   disconnect(conn, cursor)
   return jsonify(data), 200
 
@@ -67,11 +67,11 @@ def get_pressure():
   conn, cursor = connect()
   if conn is None:
     return cursor
-  query = "SELECT * FROM mqtt_data WHERE topic IS Tunel_1/esp32/TlakVzduchu"
+  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/TlakVzduchu'"
   data = fetch_data(cursor, query)
   if isinstance(data, dict) and 'error' in data:
     disconnect(conn, cursor)
-    return jsonify(data), 500
+    return jsonify(data)
   disconnect(conn, cursor)
   return jsonify(data), 200
 
@@ -80,11 +80,11 @@ def get_wind_speed():
   conn, cursor = connect()
   if conn is None:
     return cursor
-  query = "SELECT * FROM mqtt_data WHERE topic IS Tunel_1/esp32/AeroVrtula"
+  query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/AeroVrtula'"
   data = fetch_data(cursor, query)
   if isinstance(data, dict) and 'error' in data:
     disconnect(conn, cursor)
-    return jsonify(data), 500
+    return jsonify(data)
   disconnect(conn, cursor)
   return jsonify(data), 200
 
@@ -103,9 +103,9 @@ def get_tenzometer():
     return jsonify({'message': 'Weights are reseting'}), 200
   elif request.method == 'GET':
     if device == 'tenz_y':
-      query = "SELECT * FROM mqtt_data WHERE topic IS Tunel_1/esp32/Tenzometer_os_Y"
+      query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/Tenzometer_os_Y'"
     elif device == 'tenz_x':
-      query = "SELECT * FROM mqtt_data WHERE topic IS Tunel_1/esp32/Tenzometer_os_X"
+      query = "SELECT * FROM mqtt_data WHERE topic = 'Tunel_1/esp32/Tenzometer_os_X'"
     else:
       disconnect(conn, cursor)
       return jsonify({'error': 'Invalid parameter: device'}), 400
@@ -113,7 +113,7 @@ def get_tenzometer():
     data = fetch_data(cursor, query)
     if isinstance(data, dict) and 'error' in data:
       disconnect(conn, cursor)
-      return jsonify(data), 500
+      return jsonify(data)
     disconnect(conn, cursor)
     return jsonify(data), 200
 
