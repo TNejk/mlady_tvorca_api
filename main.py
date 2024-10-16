@@ -19,7 +19,7 @@ def disconnect(connection,cursor):
   connection.close()
 
 def fetch_data(cursor, data1, data2):
-  query = "SELECT * FROM mqtt_data WHERE topic = ? AND date > ? ORDER BY date ASC"
+  query = "SELECT * FROM mqtt_data WHERE topic = %s AND date > %s ORDER BY date ASC"
   try:
     cursor.execute(query, (data1, data2))
     return cursor.fetchall()
