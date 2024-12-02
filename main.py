@@ -3,12 +3,17 @@ import psycopg2
 from paho.mqtt import publish
 import os
 
-db_password = os.getenv('MLADY_TVORCA_DB_PASSWORD')
+DATABASE = os.environ.get('DATABASE')
+USER = os.environ.get('USER')
+POSTGRES_HOST = os.environ.get('POSTGRES_HOST')
+POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
+POSTGRES_PASS = os.environ.get('POSTGRES_PASS')
+
 app = Flask(__name__)
 
 def connect():
   try:
-    conn = psycopg2.connect(database='postgres', user='postgres', password=db_password, host='localhost', port='5433')
+    conn = psycopg2.connect(database=DATABASE, user=USER, password=POSTGRES_PASS, host=POSTGRES_HOST, port=POSTGRES_PORT)
     cursor = conn.cursor()
     return conn, cursor
   except psycopg2.Error as e:
@@ -143,4 +148,4 @@ def get_tenzometer():
   return jsonify({"message": "No valid action taken"}), 400
 
 if __name__ == "__main__":
-  app.run(debug=True, host='0.0.0.0', port=6789)
+  app.run(debug=True, host='0.0.0.0', port=8080)
